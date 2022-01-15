@@ -11,7 +11,7 @@ aws-sdk-s3 = "0.4.1"
 diesel = {version = "1.4.8", features = ["mysql"]}
 dotenv = "0.15"
 lambda_runtime = "0.4.1"
-ncms_core = {path = "../ncms-core"}
+ncms_core = {git = "https://github.com/n0pj/ncms-core-rs", branch = "main"}
 regex = "1"
 rusoto_core = "0.47.0"
 rusoto_s3 = "0.47.0"
