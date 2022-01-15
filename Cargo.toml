@@ -1,0 +1,24 @@
+[package]
+edition = "2021"
+name = "ncms_lambda_core"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aws-config = "0.4.1"
+aws-sdk-s3 = "0.4.1"
+diesel = {version = "1.4.8", features = ["mysql"]}
+dotenv = "0.15"
+lambda_runtime = "0.4.1"
+ncms_core = {path = "../ncms-core"}
+regex = "1"
+rusoto_core = "0.47.0"
+rusoto_s3 = "0.47.0"
+tokio = {version = "1.15", features = ["full"]}
+
+[target.x86_64-unknown-linux-musl]
+rustflags = ["-C", "link-args= -static"]
+
+[patch.crates-io]
+mysqlclient-sys = {git = "https://github.com/pzmarzly/mysqlclient-sys", rev = "acd1b2b"}
