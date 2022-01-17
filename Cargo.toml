@@ -10,6 +10,7 @@ aws-config = "0.4.1"
 aws-sdk-s3 = "0.4.1"
 diesel = {version = "1.4.8", features = ["mysql"]}
 dotenv = "0.15"
+juniper = "0.15.7"
 lambda_runtime = "0.4.1"
 ncms_core = {git = "https://github.com/n0pj/ncms-core-rs", branch = "main"}
 regex = "1"
