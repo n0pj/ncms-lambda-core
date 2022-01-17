@@ -1,3 +1,4 @@
+pub mod graph_ql;
 pub mod http;
 pub mod mysql;
 
