@@ -1,5 +1,5 @@
 use ncms_core::errors;
-use ncms_core::http::response::ValueErrors;
+use ncms_core::errors::http::{ValueError, ValueErrors};
 use regex::Regex;
 use serde_json::{to_value, Value};
 
@@ -12,8 +12,16 @@ pub fn get_query(event: Value) -> Result<Value, Value> {
     let query_string_parameters = match event.get("queryStringParameters") {
         Some(event) => event.clone(),
         None => {
-            let field_errors =
-                ValueErrors::new(errors::validation::CANNOT_FIND_QUERY_STRING_PARAMETERS.message);
+            let field_error = ValueError {
+                property: Some(
+                    errors::validation::CANNOT_FIND_QUERY_STRING_PARAMETERS
+                        .message
+                        .to_owned(),
+                ),
+                ..Default::default()
+            };
+            let field_errors = ValueErrors::new(vec![field_error]);
+
             return Err(to_value(field_errors).expect("fatal error"));
         }
     };
@@ -22,7 +30,12 @@ pub fn get_query(event: Value) -> Result<Value, Value> {
     match query_string_parameters.get("query") {
         Some(query) => Ok(query.clone()),
         None => {
-            let field_errors = ValueErrors::new(errors::validation::CANNOT_FIND_QUERY.message);
+            let field_error = ValueError {
+                property: Some(errors::validation::CANNOT_FIND_QUERY.message.to_owned()),
+                ..Default::default()
+            };
+            let field_errors = ValueErrors::new(vec![field_error]);
+
             return Err(to_value(field_errors).expect("fatal error"));
         }
     }
@@ -33,7 +46,15 @@ pub fn get_query(event: Value) -> Result<Value, Value> {
 pub fn format_query(query: Value) -> Result<String, Value> {
     let query = match serde_json::to_string(&query) {
         Ok(result) => result,
-        Err(_) => return Err(ValueErrors::new("fatal error").to_value()),
+        Err(_) => {
+            let field_error = ValueError {
+                property: Some(errors::validation::CANNOT_FIND_QUERY.message.to_owned()),
+                ..Default::default()
+            };
+            let field_errors = ValueErrors::new(vec![field_error]);
+
+            return Err(field_errors.to_value());
+        }
     };
     // let query = query.to_string();
     let re = Regex::new(r#""(.*)""#).unwrap();

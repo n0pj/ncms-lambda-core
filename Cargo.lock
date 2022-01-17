@@ -977,7 +977,7 @@ dependencies = [
 [[package]]
 name = "ncms_core"
 version = "0.1.0"
-source = "git+https://github.com/n0pj/ncms-core-rs?branch=main#c0ed02b7bbbae253925d58cd9ae54990f8612c4c"
+source = "git+https://github.com/n0pj/ncms-core-rs?branch=main#dc30c1c4985f43f9f3f94a53971effde070ba967"
 dependencies = [
  "diesel",
  "dotenv",
