@@ -2,7 +2,7 @@ use aws_sdk_s3::{Client, Region};
 use diesel::prelude::*;
 
 use diesel::sql_query;
-use ncms_core::mysql::establish_connection;
+use ncms_core::db::mysql::establish_connection;
 use regex::Regex;
 use rusoto_core::Region as RusotoRegion;
 use rusoto_s3::{GetObjectRequest, S3Client, S3};
@@ -86,9 +86,7 @@ impl Migration {
     ///
     async fn get_sql(&self, key: String) -> Result<String, Error> {
         let client = S3Client::new(RusotoRegion::ApNortheast1);
-
         let bucket = env::var("S3_MIGRATIONS_BUCKET").expect("get_migration_keys error");
-
         let object = client
             .get_object(GetObjectRequest {
                 bucket,
@@ -96,7 +94,6 @@ impl Migration {
                 ..Default::default()
             })
             .await?;
-
         let sql = tokio::task::spawn_blocking(|| {
             let mut stream = object.body.unwrap().into_blocking_read();
             let mut body = String::new();
