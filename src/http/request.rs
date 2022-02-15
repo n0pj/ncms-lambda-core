@@ -1,12 +1,10 @@
-use ncms_core::errors;
-use ncms_core::errors::http::{ValueError, ValueErrors};
 use regex::Regex;
-use serde_json::{to_value, Value};
+use serde_json::Value;
 use std::io::{Error, ErrorKind};
 
 /// Lambda に GET パラメーターを渡した場合 queryStringParameters に入る。
 /// そこから GET パラメーターを取得する
-pub fn get_query(event: Value) -> Result<Value, Error> {
+pub fn get_query(event: &Value) -> Result<Value, Error> {
     // println!("{:?}", event);
 
     // Lambda では queryStringParameters の中に GET パラメーターが入る
@@ -28,7 +26,7 @@ pub fn get_query(event: Value) -> Result<Value, Error> {
 }
 
 /// 指定のパラメーターがあるかどうかを確認し、あればそのパラメーターを返す
-pub fn find_param(event: Value, param: &str) -> Result<Value, Error> {
+pub fn find_param(event: &Value, param: &str) -> Result<Value, Error> {
     match event.get(param) {
         Some(event) => Ok(event.clone()),
         None => Err(Error::new(
@@ -40,8 +38,8 @@ pub fn find_param(event: Value, param: &str) -> Result<Value, Error> {
 
 /// GET で送られてきたものは "" で囲まれてしまうため、 "" を解除する
 /// "query { humans(i: 0) { name } }" -> query { humans(i: 0) { name } }
-pub fn format_query(query: Value) -> Result<String, Error> {
-    let query = match serde_json::to_string(&query) {
+pub fn format_query(query: &Value) -> Result<String, Error> {
+    let query = match serde_json::to_string(query) {
         Ok(result) => result,
         Err(_) => return Err(Error::new(ErrorKind::InvalidInput, "query is not found")),
     };
@@ -65,8 +63,8 @@ mod tests {
                 "query": "query { humans(i: 0) { name } }"
             }
         });
-        let query = get_query(event).unwrap();
-        let query = format_query(query).unwrap();
+        let query = get_query(&event).unwrap();
+        let query = format_query(&query).unwrap();
         assert_eq!(query, "query { humans(i: 0) { name } }");
     }
 
@@ -77,8 +75,8 @@ mod tests {
                 "query": "query { humans(i: 0) { name } }"
             }
         });
-        let query = get_query(event).unwrap();
-        let query = format_query(query).unwrap();
+        let query = get_query(&event).unwrap();
+        let query = format_query(&query).unwrap();
         assert_eq!(query, "query { humans(i: 0) { name } }");
     }
 }
