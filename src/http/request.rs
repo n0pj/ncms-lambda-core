@@ -25,24 +25,19 @@ pub fn get_query(event: &Value) -> Result<Value, Error> {
     }
 }
 
-/// Lambda に POST パラメーターを渡した場合 bodyParameters に入る。
+/// Lambda に POST パラメーターを渡した場合 body に入る。
 /// そこから POST パラメーターを取得する
 pub fn get_body_query(event: &Value) -> Result<Value, Error> {
     // println!("{:?}", event);
 
-    // Lambda では bodyParameters の中に GET パラメーターが入る
-    let body_parameters = match event.get("bodyParameters") {
+    // Lambda では body の中に GET パラメーターが入る
+    let body = match event.get("body") {
         Some(event) => event.clone(),
-        None => {
-            return Err(Error::new(
-                ErrorKind::InvalidInput,
-                "bodyParameters is not found",
-            ))
-        }
+        None => return Err(Error::new(ErrorKind::InvalidInput, "body is not found")),
     };
 
     // query に GraphQL query を入れるため、ここから取得
-    match body_parameters.get("query") {
+    match body.get("query") {
         Some(query) => Ok(query.clone()),
         None => Err(Error::new(ErrorKind::InvalidInput, "query is not found")),
     }
