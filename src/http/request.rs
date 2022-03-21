@@ -36,6 +36,12 @@ pub fn get_body_query(event: &Value) -> Result<Value, Error> {
         None => return Err(Error::new(ErrorKind::InvalidInput, "body is not found")),
     };
 
+    // body を Rust の構造体に変換
+    let body = match serde_json::from_str::<Value>(&body.to_string()) {
+        Ok(body) => body,
+        Err(err) => return Err(Error::new(ErrorKind::InvalidInput, err.to_string())),
+    };
+
     // query に GraphQL query を入れるため、ここから取得
     match body.get("query") {
         Some(query) => Ok(query.clone()),
